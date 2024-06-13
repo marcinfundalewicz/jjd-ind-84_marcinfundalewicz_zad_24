@@ -1,5 +1,6 @@
 package pl.javastart;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class BudgetApp {
@@ -11,10 +12,15 @@ public class BudgetApp {
     private static final String DELETE_TRANSACTION = "4";
 
     public static void main(String[] args) {
-        run();
+        try {
+            run();
+        } catch (SQLException e) {
+            System.out.println("Coś poszło nie tak");
+        }
     }
 
-    public static void run() {
+    public static void run() throws SQLException {
+        BudgetDao budgetDao = new BudgetDao();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Witaj w aplikacji bankowej BankApp");
 
@@ -29,12 +35,13 @@ public class BudgetApp {
             String option = scanner.nextLine();
             switch (option) {
                 case EXIT -> {
+                    budgetDao.close();
                     return;
                 }
-                case ADD_TRANSACTION -> BudgetAddTransaction.main(new String[0]);
-                case MODIFY_TRANSACTION -> BudgetModifyTransaction.main(new String[0]);
-                case SHOW_TRANSACTIONS -> BudgetShowTransaction.main(new String[0]);
-                case DELETE_TRANSACTION -> BudgetDeleteTransaction.main(new String[0]);
+                case ADD_TRANSACTION -> BudgetAddTransaction.run();
+                case MODIFY_TRANSACTION -> BudgetModifyTransaction.run();
+                case SHOW_TRANSACTIONS -> BudgetShowTransaction.run();
+                case DELETE_TRANSACTION -> BudgetDeleteTransaction.run();
                 default -> System.out.println("Nieprawidłowa opcja");
             }
         }

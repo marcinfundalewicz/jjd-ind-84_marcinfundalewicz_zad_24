@@ -1,12 +1,13 @@
 package pl.javastart;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
 public class BudgetModifyTransaction {
-    public static void main(String[] args) {
+    public static void run() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Podaj ID transakcji, którą chcesz zmodyfikować");
         long id = scanner.nextLong();
@@ -30,6 +31,16 @@ public class BudgetModifyTransaction {
         }
         Transaction transaction = new Transaction(id, type, description, amount, date);
         BudgetDao budgetDao = new BudgetDao();
-        budgetDao.modify(transaction);
+        try {
+            boolean isEverythingOk = budgetDao.modify(transaction);
+            if (isEverythingOk) {
+                System.out.println("Zaktualizowano rekordy w bazie danych");
+            }
+            else {
+                System.out.println("Nie udało się zaktualizować rekordu w bazie danych");
+            }
+        } catch (SQLException e) {
+            System.out.println("Wystąpił błąd w trakcie modyfikowania rekordu w bazie danych" + e.getMessage());
+        }
     }
 }
