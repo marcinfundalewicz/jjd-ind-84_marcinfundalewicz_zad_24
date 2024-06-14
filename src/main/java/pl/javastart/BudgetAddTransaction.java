@@ -22,7 +22,7 @@ public class BudgetAddTransaction {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
-            java.util.Date parsedDate = dateFormat.parse(userDate);
+            Date parsedDate = dateFormat.parse(userDate);
             date = new Date(parsedDate.getTime());
         } catch (Exception e) {
             System.out.println("Nieprawidłowy format daty");

@@ -2,7 +2,9 @@ package pl.javastart;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class BudgetDao {
     private Connection connection;
@@ -33,23 +35,34 @@ public class BudgetDao {
         preparedStatement.setBigDecimal(3, transaction.getAmount());
         preparedStatement.setDate(4, (Date) transaction.getDate());
         preparedStatement.setLong(5, transaction.getId());
-        preparedStatement.executeUpdate();
-        return true;
+        int updatedRows = preparedStatement.executeUpdate();
+        return updatedRows != 0;
     }
 
-    ResultSet show(String transactionType) throws SQLException {
+    List<Transaction> show(String transactionType) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transaction WHERE (type = ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, transactionType);
-        return preparedStatement.executeQuery();
+        ResultSet result = preparedStatement.executeQuery();
+        while (result.next()) {
+            Long transactionId = result.getLong("id");
+            String type = result.getString("type");
+            String description = result.getString("description");
+            BigDecimal amount = result.getBigDecimal("amount");
+            Date date = result.getDate("date");
+            Transaction transaction = new Transaction(transactionId, type, description, amount, date);
+            transactions.add(transaction);
+        }
+        return transactions;
     }
 
     boolean delete(long transactionId) throws SQLException {
         String sql = "DELETE FROM transaction WHERE (id = ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setLong(1, transactionId);
-        preparedStatement.executeUpdate();
-        return true;
+        int updatedRows = preparedStatement.executeUpdate();
+        return updatedRows != 0;
     }
 
     void close() throws SQLException {
